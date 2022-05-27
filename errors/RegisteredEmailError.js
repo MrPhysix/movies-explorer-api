@@ -4,4 +4,5 @@ class RegisteredEmailError extends Error {
     this.statusCode = 409;
   }
 }
+
 module.exports = RegisteredEmailError;

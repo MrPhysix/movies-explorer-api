@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
 // parsers
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -10,24 +11,29 @@ const {
   errors,
   celebrate, Joi,
 } = require('celebrate');
+// utils
+const limiter = require('./utils/limiter');
 // db
-const DB_URL = 'mongodb://localhost:27017/bitfilmsdb';
-const { PORT = 3000 } = process.env;
+const { NODE_ENV, DB, PORT = 3000 } = process.env;
+const DB_URL = NODE_ENV === 'production' ? DB : 'mongodb://localhost:27017/bitfilmsdb';
 // errors
-const NotFoundError = require('./errors/NotFoundError');
+const {
+  pathError,
+  serverError,
+} = require('./utils/errorHandler');
 // logs
 const {
   requestLogger,
   errorLogger,
 } = require('./middlewares/logger');
 // routes
-const userRouter = require('./routes/users');
-const movieRouter = require('./routes/movies');
-const { signUp, signIn } = require('./controllers/users');
+const connectRoutes = require('./routes/index');
+const { signUp, signIn, signOut } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 // app
 const app = express();
-
+app.use(helmet());
+app.use(limiter);
 app.use(cors());
 app.use(bodyParser.json());
 app.use(requestLogger);
@@ -49,26 +55,15 @@ app.post('/sign-in', celebrate({
 
 app.use(cookieParser());
 app.use(auth);
+app.post('/sign-out', signOut);
 //
-app.use('/users', userRouter);
-app.use('/movies', movieRouter);
-
+connectRoutes(app);
 // errors handlers
 app.use(errorLogger);
 app.use(errors());
-app.use((req, res, next) => {
-  next(new NotFoundError(`Путь ${req.method} запроса ${req.path} не найден `));
-});
+app.use(pathError);
+app.use(serverError);
 
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-  res.status(statusCode).send({
-    message: statusCode === 500
-      ? `Произошла ошибка сервера — ${err}`
-      : message,
-  });
-  next();
-});
 (async function start() {
   try {
     await mongoose.connect(DB_URL);

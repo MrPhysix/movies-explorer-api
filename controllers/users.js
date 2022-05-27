@@ -86,9 +86,20 @@ async function signIn(req, res, next) {
   }
 }
 
+function signOut(req, res, next) {
+  const user = req.user._id;
+
+  try {
+    res.status(200).clearCookie('jwt').send({ message: `User [${user}] logged out` });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getCurrentUser,
   setCurrentUser,
   signUp,
   signIn,
+  signOut,
 };
