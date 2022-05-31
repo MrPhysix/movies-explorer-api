@@ -38,6 +38,7 @@ async function setCurrentUser(req, res, next) {
     res.status(200).send(user);
   } catch (err) {
     if (err.name === 'ValidationError') next(new ValidationError('Невалидные данные'));
+    if (err.code === 11000) next(new RegisteredEmailError('Указанный Email пренадлежит другому пользователю'));
     else next(err);
   }
 }
