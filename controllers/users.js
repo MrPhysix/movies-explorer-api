@@ -7,13 +7,14 @@ const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
 const LoginError = require('../errors/LoginError');
 const RegisteredEmailError = require('../errors/RegisteredEmailError');
+const { ErrorMessage } = require('../utils/const');
 
 async function getCurrentUser(req, res, next) {
   console.log(req.user);
 
   try {
     const user = await User.findById(req.user._id);
-    if (!user) next(new NotFoundError('Пользователь не найден'));
+    if (!user) next(new NotFoundError(`Пользователь ${ErrorMessage.NotFound}`));
 
     res.status(200).send(user);
   } catch (err) {
@@ -33,12 +34,12 @@ async function setCurrentUser(req, res, next) {
         runValidators: true,
       },
     );
-    if (!user) next(new NotFoundError('Пользователь не найден'));
+    if (!user) next(new NotFoundError(`Пользователь ${ErrorMessage.NotFound}`));
 
     res.status(200).send(user);
   } catch (err) {
-    if (err.name === 'ValidationError') next(new ValidationError('Невалидные данные'));
-    if (err.code === 11000) next(new RegisteredEmailError('Указанный Email пренадлежит другому пользователю'));
+    if (err.name === 'ValidationError') next(new ValidationError(ErrorMessage.InvalidData));
+    if (err.code === 11000) next(new RegisteredEmailError(ErrorMessage.RegisteredEmail));
     else next(err);
   }
 }
@@ -57,7 +58,7 @@ async function signUp(req, res, next) {
       _id: user._id,
     });
   } catch (err) {
-    if (err.code === 11000) next(new RegisteredEmailError('Указанный Email уже зарегистрирован'));
+    if (err.code === 11000) next(new RegisteredEmailError(ErrorMessage.RegisteredEmail));
     else if (err.name === 'ValidationError') next(new ValidationError(err.message));
     else next(err);
   }
@@ -68,10 +69,10 @@ async function signIn(req, res, next) {
 
   try {
     const user = await User.findUserByCredentials(email, password);
-    if (!user) next(new LoginError('Пользователь не найден'));
+    if (!user) next(new LoginError(`Пользователь ${ErrorMessage.NotFound}`));
 
     const token = signToken(user);
-    if (!token) next(new LoginError('Пользователь не найден [token]'));
+    if (!token) next(new LoginError(`Пользователь ${ErrorMessage.NotFound} [token]`));
 
     req.headers.Authorization = token;
     console.log('headers Authorization');
@@ -82,7 +83,7 @@ async function signIn(req, res, next) {
     });
     res.status(200).send({ token });
   } catch (err) {
-    if (err.name === 'LoginError') next(new LoginError('Неверный email или пароль'));
+    if (err.name === 'LoginError') next(new LoginError(ErrorMessage.Login));
     else next(err);
   }
 }

@@ -3,7 +3,8 @@ const Movie = require('../models/movie');
 const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
 const AccessError = require('../errors/AccessError');
-//
+// message
+const { ErrorMessage } = require('../utils/const');
 
 async function getMovies(req, res, next) {
   try {
@@ -42,7 +43,7 @@ async function createMovie(req, res, next) {
     });
     res.status(200).send(movie);
   } catch (err) {
-    if (err.name === 'ValidationError') next(new ValidationError('Невалидные данные'));
+    if (err.name === 'ValidationError') next(new ValidationError(ErrorMessage.InvalidData));
     else next(err);
   }
 }
@@ -54,15 +55,15 @@ async function removeMovie(req, res, next) {
   let movie;
   try {
     movie = await Movie.findById(movieId);
-    if (!movie) next(new NotFoundError('Такого фильма нет'));
+    if (!movie) next(new NotFoundError(`Фильм ${ErrorMessage.NotFound}`));
 
     const ownerId = movie.owner.toString();
-    if (ownerId !== userId) next(new AccessError('Вы не можете удалить чужую страницу фильма'));
+    if (ownerId !== userId) next(new AccessError(`${ErrorMessage.Access}: Вы не можете удалить чужую страницу фильма`));
 
     movie = await Movie.findByIdAndRemove(movieId);
     res.status(200).send(movie);
   } catch (err) {
-    if (err.kind === 'ObjectId') next(new ValidationError('Невалидный [id]'));
+    if (err.kind === 'ObjectId') next(new ValidationError(`${ErrorMessage.InvalidData} [id]`));
     else next(err);
   }
 }

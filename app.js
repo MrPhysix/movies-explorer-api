@@ -31,6 +31,7 @@ app.use(cors());
 app.use(bodyParser.json());
 // routes
 const connectRoutes = require('./routes/index');
+const { Response } = require('./utils/const');
 
 connectRoutes(app);
 // errors handlers
@@ -42,10 +43,10 @@ app.use(serverError);
 (async function start() {
   try {
     await mongoose.connect(DB_URL);
-    console.log(`Connected to Mongo! Database name: ${mongoose.connections[0].name}`);
+    console.log(`${Response.MongoConnected}${mongoose.connections[0].name}`);
 
     app.listen(PORT, () => {
-      console.log(`App listening on port ${PORT}`);
+      console.log(`${Response.AppListen} ${PORT}`);
     });
   } catch (err) {
     console.log(err);

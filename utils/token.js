@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
+const { JWT_SECRET_DEV } = require('./const');
 //
 const { NODE_ENV, JWT_SECRET } = process.env;
-const KEY = NODE_ENV === 'production' ? JWT_SECRET : 'dev-key';
+const KEY = NODE_ENV === 'production' ? JWT_SECRET : JWT_SECRET_DEV;
 
 function signToken(user) {
   return jwt.sign(

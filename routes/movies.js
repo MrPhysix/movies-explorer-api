@@ -2,6 +2,7 @@ const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const validator = require('validator');
 //
+const { ErrorMessage } = require('../utils/const');
 const { getMovies, createMovie, removeMovie } = require('../controllers/movie');
 
 router.get('/', getMovies);
@@ -16,19 +17,19 @@ router.post('/', celebrate({
       if (validator.isURL(data)) {
         return data;
       }
-      return helper.message('Некоректный URL');
+      return helper.message(ErrorMessage.URL);
     }),
     trailerLink: Joi.string().required().custom((data, helper) => {
       if (validator.isURL(data)) {
         return data;
       }
-      return helper.message('Некоректный URL');
+      return helper.message(ErrorMessage.URL);
     }),
     thumbnail: Joi.string().required().custom((data, helper) => {
       if (validator.isURL(data)) {
         return data;
       }
-      return helper.message('Некоректный URL');
+      return helper.message(ErrorMessage.URL);
     }),
     // owner: Joi.object().required().uri(),
     movieId: Joi.number().required(),
