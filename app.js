@@ -22,8 +22,6 @@ const {
   requestLogger,
   errorLogger,
 } = require('./middlewares/logger');
-// routes
-const connectRoutes = require('./routes/index');
 // app
 const app = express();
 app.use(helmet());
@@ -32,6 +30,8 @@ app.use(limiter);
 app.use(cors());
 app.use(bodyParser.json());
 // routes
+const connectRoutes = require('./routes/index');
+
 connectRoutes(app);
 // errors handlers
 app.use(errorLogger);
