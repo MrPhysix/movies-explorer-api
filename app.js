@@ -6,16 +6,12 @@ const mongoose = require('mongoose');
 const helmet = require('helmet');
 // parsers
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const {
-  errors,
-  celebrate, Joi,
-} = require('celebrate');
+const { errors } = require('celebrate');
 // utils
 const limiter = require('./utils/limiter');
 // db
 const { NODE_ENV, DB, PORT = 3000 } = process.env;
-const DB_URL = NODE_ENV === 'production' ? DB : 'mongodb://localhost:27017/bitfilmsdb';
+const DB_URL = NODE_ENV === 'production' ? DB : 'mongodb://localhost:27017/moviesdb';
 // errors
 const {
   pathError,
@@ -28,35 +24,14 @@ const {
 } = require('./middlewares/logger');
 // routes
 const connectRoutes = require('./routes/index');
-const { signUp, signIn, signOut } = require('./controllers/users');
-const auth = require('./middlewares/auth');
 // app
 const app = express();
 app.use(helmet());
+app.use(requestLogger);
 app.use(limiter);
 app.use(cors());
 app.use(bodyParser.json());
-app.use(requestLogger);
-// auth
-app.post('/sign-up', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-    name: Joi.string().min(2).max(30),
-  }),
-}), signUp);
-
-app.post('/sign-in', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-  }),
-}), signIn);
-
-app.use(cookieParser());
-app.use(auth);
-app.post('/sign-out', signOut);
-//
+// routes
 connectRoutes(app);
 // errors handlers
 app.use(errorLogger);
