@@ -3,8 +3,8 @@ const { verifyToken } = require('../utils/token');
 const { ErrorMessage } = require('../utils/const');
 
 module.exports = (req, res, next) => {
-  // const { authorization } = req.headers; - если не получится получить cookie в браузере
-  const token = req.cookies.jwt;
+  const token = req.headers.authorization;// - если не получится получить cookie в браузере
+  // const token = req.cookies.jwt;
 
   if (!token) throw new LoginError(ErrorMessage.Authorization);
 
