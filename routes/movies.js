@@ -13,12 +13,7 @@ router.post('/', celebrate({
     duration: Joi.number().required(),
     year: Joi.string().required(),
     description: Joi.string().required(),
-    image: Joi.string().required().custom((data, helper) => {
-      if (validator.isURL(data)) {
-        return data;
-      }
-      return helper.message(ErrorMessage.URL);
-    }),
+    image: Joi.object().required(),
     trailerLink: Joi.string().required().custom((data, helper) => {
       if (validator.isURL(data)) {
         return data;
@@ -32,7 +27,7 @@ router.post('/', celebrate({
       return helper.message(ErrorMessage.URL);
     }),
     // owner: Joi.object().required().uri(),
-    movieId: Joi.number().required(),
+    id: Joi.number().required(),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
   }),
