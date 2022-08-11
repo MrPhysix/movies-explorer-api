@@ -8,7 +8,12 @@ const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 // utils
-const limiter = require('./utils/limiter');
+// const limiter = require('./utils/limiter');
+
+// /movies-explorer-api/utils/limiter.js:1
+// <<<<<<< HEAD
+// ^^
+
 // db
 const { NODE_ENV, DB, PORT = 3000 } = process.env;
 const DB_URL = NODE_ENV === 'production' ? DB : 'mongodb://localhost:27017/moviesdb';
