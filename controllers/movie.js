@@ -9,7 +9,7 @@ const { ErrorMessage } = require('../utils/const');
 async function getMovies(req, res, next) {
   try {
     const movies = await Movie.find({});
-    const userMovies = movies.filter(item => item.owner.toString() === req.user._id);
+    const userMovies = movies.filter((item) => item.owner.toString() === req.user._id);
     res.status(200).send(userMovies);
   } catch (err) {
     next(err);

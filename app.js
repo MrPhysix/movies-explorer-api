@@ -12,6 +12,7 @@ const limiter = require('./utils/limiter');
 // db
 const { NODE_ENV, DB, PORT = 3000 } = process.env;
 const DB_URL = NODE_ENV === 'production' ? DB : 'mongodb://localhost:27017/moviesdb';
+
 // errors
 const {
   pathError,
