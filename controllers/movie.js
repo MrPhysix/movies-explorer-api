@@ -19,14 +19,6 @@ async function getMovies(req, res, next) {
 async function createMovie(req, res, next) {
   const owner = req.user._id;
 
-  // const {
-  //   country, director,
-  //   duration, year,
-  //   description, image,
-  //   trailerLink, nameRU, nameEN,
-  //   thumbnail, movieId,
-  // } = req.body;
-
   try {
     const movie = await Movie.create({ ...req.body, owner });
     res.status(200).send(movie);
