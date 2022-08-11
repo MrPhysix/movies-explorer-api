@@ -11,9 +11,14 @@ router.post('/', celebrate({
     country: Joi.string().required(),
     director: Joi.string().required(),
     duration: Joi.number().required(),
-    year: Joi.string().required(),
+    year: Joi.number().required(),
     description: Joi.string().required(),
-    image: Joi.object().required(),
+    image: Joi.string().required().custom((data, helper) => {
+      if (validator.isURL(data)) {
+        return data;
+      }
+      return helper.message(ErrorMessage.URL);
+    }),
     trailerLink: Joi.string().required().custom((data, helper) => {
       if (validator.isURL(data)) {
         return data;
@@ -27,7 +32,7 @@ router.post('/', celebrate({
       return helper.message(ErrorMessage.URL);
     }),
     // owner: Joi.object().required().uri(),
-    id: Joi.number().required(),
+    movieId: Joi.number().required(),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
   }),

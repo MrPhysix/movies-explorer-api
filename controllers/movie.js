@@ -9,7 +9,8 @@ const { ErrorMessage } = require('../utils/const');
 async function getMovies(req, res, next) {
   try {
     const movies = await Movie.find({});
-    res.status(200).send(movies);
+    const userMovies = movies.filter(item => item.owner.toString() === req.user._id);
+    res.status(200).send(userMovies);
   } catch (err) {
     next(err);
   }
@@ -18,32 +19,19 @@ async function getMovies(req, res, next) {
 async function createMovie(req, res, next) {
   const owner = req.user._id;
 
-  const {
-    country, director,
-    duration, year,
-    description, image,
-    trailerLink, nameRU, nameEN,
-    thumbnail, movieId,
-  } = req.body;
+  // const {
+  //   country, director,
+  //   duration, year,
+  //   description, image,
+  //   trailerLink, nameRU, nameEN,
+  //   thumbnail, movieId,
+  // } = req.body;
 
   try {
-    const movie = await Movie.create({
-      country,
-      director,
-      duration,
-      year,
-      description,
-      image,
-      trailerLink,
-      nameRU,
-      nameEN,
-      thumbnail,
-      movieId,
-      owner,
-    });
+    const movie = await Movie.create({ ...req.body, owner });
     res.status(200).send(movie);
   } catch (err) {
-    if (err.name === 'ValidationError') next(new ValidationError(ErrorMessage.InvalidData));
+    if (err.name === 'ValidationError') next(new ValidationError(err));
     else next(err);
   }
 }
