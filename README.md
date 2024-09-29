@@ -1,3 +1,3 @@
 # movies-explorer-api
 
-[Movies.API](https://api.mr-movies.nomoredomains.xyz "Movies")
+[Movies.API](https://movies-explorer-api-production-ec1b.up.railway.app/ "Movies")
